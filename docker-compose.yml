@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  kelly-pool:
+    container_name: kelly-pool.development.com
+    build:
+      context: ./
+      target: development
+      args:
+        - DEVELOPMENT=True
+      ssh:
+        - default
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/usr/src/kelly-pool
+    ports:
+      - "8080:8080"
