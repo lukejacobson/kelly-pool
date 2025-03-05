@@ -39,10 +39,7 @@ jobs:
       - name: Build and publish app image
         run: |
           # build Docker image with tag matching the current environment and date timestamp
-          docker build --ssh default \
-            --build-arg APP_ENVIRONMENT=$APP_ENVIRONMENT \
-            --build-arg IMAGE_TAG=$IMAGE_TAG \
-            -t kelly-pool:$IMAGE_TAG .
+          docker build --ssh default -t kelly-pool:$IMAGE_TAG .
 
           # create matching remote Docker image tags
           docker tag kelly-pool:$IMAGE_TAG 600627356228.dkr.ecr.ap-southeast-2.amazonaws.com/jukelacobson/lukes-kelly-pool:$IMAGE_TAG
