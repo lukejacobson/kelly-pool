@@ -1,0 +1,13 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "600627356228.dkr.ecr.ap-southeast-2.amazonaws.com/jukelacobson/lukes-kelly-pool:$APP_ENVIRONMENT-$DATE_TIMESTAMP",
+    "Update": "true"
+  },
+  "Ports": [
+    {
+      "ContainerPort": "8080",
+      "HostPort": "8080"
+    }
+  ]
+}

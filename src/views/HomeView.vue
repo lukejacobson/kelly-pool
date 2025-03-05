@@ -12,7 +12,7 @@ export default {
 
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/cards.png" />
+    <img alt="Kelly pool logo" src="../assets/cards.png" />
     <BasePage msg="Welcome to my simple Games App, powered by Vue.js!" />
   </div>
 </template>

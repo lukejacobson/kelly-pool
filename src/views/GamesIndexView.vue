@@ -16,8 +16,20 @@ export default {
   <div class="home">
     <img alt="Waving Hand" src="../assets/billiards.png" />
     <BasePage msg="Kelly Pool">
-      <KellyPoolBase/>
+      <div class="canvas">
+        <KellyPoolBase/>
+      </div>
     </BasePage>
 
   </div>
 </template>
+
+<style scoped>
+.canvas {
+  max-width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+</style>

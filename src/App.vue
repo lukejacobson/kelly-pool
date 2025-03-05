@@ -1,3 +1,12 @@
+<script>
+export default {
+  name: "App",
+  beforeMount() {
+    this.$store.commit('initialiseStore')    
+  }
+}
+</script>
+
 <template>
   <router-view />
   <nav>

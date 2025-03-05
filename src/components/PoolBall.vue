@@ -1,16 +1,16 @@
 <script>
+
 export default {
   name: "PoolBall",
   props: {
-    number: Number,
-    image: String
+    ball: Object,
   },
 }
 </script>
 
 <template>
   <div>
-    <img :src=this.image alt="1 Ball">
+    <img :src=ball.image :alt="ball.id + ' Ball'">
   </div>
   
 </template>

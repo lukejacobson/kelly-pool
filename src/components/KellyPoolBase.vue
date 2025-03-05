@@ -1,68 +1,123 @@
 <script>
 import PoolBall from "./PoolBall.vue";
-import ball_1 from "../assets/pool_balls/ball_1.png";
-import ball_2 from "../assets/pool_balls/ball_2.png";
-import ball_3 from "../assets/pool_balls/ball_3.png";
-import ball_4 from "../assets/pool_balls/ball_4.png";
-import ball_5 from "../assets/pool_balls/ball_5.png";
-import ball_6 from "../assets/pool_balls/ball_6.png";
-import ball_7 from "../assets/pool_balls/ball_7.png";
-import ball_8 from "../assets/pool_balls/ball_8.png";
-import ball_9 from "../assets/pool_balls/ball_9.png";
-import ball_10 from "../assets/pool_balls/ball_10.png";
-import ball_11 from "../assets/pool_balls/ball_11.png";
-import ball_12 from "../assets/pool_balls/ball_12.png";
-import ball_13 from "../assets/pool_balls/ball_13.png";
-import ball_14 from "../assets/pool_balls/ball_14.png";
-import ball_15 from "../assets/pool_balls/ball_15.png";
+import PlayerNames from "./PlayerNames.vue";
+import GameStates from "../models/GameStates";
 
 export default {
   name: "KellyPoolBase",
   components: {
     PoolBall,
+    PlayerNames,
   },
   data() {
     return {
-      my_balls: [
-        ball_1, ball_2, ball_3, ball_4, ball_5, ball_6, ball_7, ball_8, ball_9,
-        ball_10, ball_11, ball_12, ball_13, ball_14, ball_15,
-      ]
+      displayPlayer: undefined,
+      displayPlayerBalls: undefined,
+    }
+  },
+  methods: {
+    onBallClick(ball) {
+      if (this.showingPlayerBalls) {
+        console.log("Clicking ball here does nothing...")
+      } else {
+        this.$store.commit('sink_ball', ball.id)
+      }
+    },
+    showPlayerBalls(player) {
+      console.log("Showwing balls for player", player)
+      this.displayPlayer = player
+      this.displayPlayerBalls = this.$store.getters.getPlayerBalls(player)
+    },
+    hidePlayerBalls() {
+      this.displayPlayer = undefined
+      this.displayPlayerBalls = undefined
+    },
+    resetGame(){
+      this.hidePlayerBalls()
+      this.$store.commit('resetState')
+    }
+  },
+  computed: {
+    startState() {
+      return this.$store.state.gameState === GameStates.ADD_PLAYERS
+    },
+    playState() {
+      return this.$store.state.gameState === GameStates.PLAY
+    },
+    showingPlayerBalls() {
+      return (this.displayPlayer && this.displayPlayerBalls)
+    },
+    ballsToDisplay() {
+      if (this.showingPlayerBalls) {
+        return this.displayPlayerBalls
+      } else {
+        return this.$store.state.balls
+      }
     }
   }
 }
 </script>
 
 <template>
-  <div class="game_contanier">
-    <div class="ball_grid">
-      <div class="ball_container" v-for="(ball, index) in my_balls" :key="index">
-        <PoolBall :number="index" :image="ball"/>
+  <div class="reset">
+    <button @click="resetGame">Restart Game</button>
+  </div>
+
+  <PlayerNames @show:balls="showPlayerBalls"/>
+
+  <div v-if="playState">
+
+    <div class="selected_ball" v-show="false">
+      <div>There is a ball selected:</div>
+      <div v-if="$store.getters.selectedBall">
+        {{ $store.getters.selectedBall.id }}
+      </div>
+    </div>
+
+    <div class="hide_player_balls" v-if="showingPlayerBalls">
+      <button @click="hidePlayerBalls">Hide Balls for {{ displayPlayer.name }}</button>
+    </div>
+
+    <div class="game_contanier">
+      <div class="ball_grid">
+        <div class="ball_container" v-for="ball in ballsToDisplay" :key="ball.id">
+          <PoolBall :ball="ball" @click="onBallClick(ball)"/>
+        </div>
       </div>
     </div>
   </div>
-
-
 </template>
 
 <style scoped>
+
+.reset {
+  margin: 20px;
+}
+
+.hide_player_balls {
+  margin: 30px 0;
+  > button {
+    font-size: 20px;
+  }
+}
 
 .game_contanier {
   width: 100%;
 }
 
 .ball_grid {
-  max-width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   width: 360px;
-  padding-left: 20px;
-  padding-right: 20px;
 }
 
 .ball_container {
   padding: 10px;
+}
+
+.selected_ball {
+  height: 70px;
+  margin: 10px;
 }
 </style>
