@@ -4,7 +4,11 @@
 
 FROM node AS base
 
+ARG APP_ENVIRONMENT
+ARG DEVELOPMENT=False
+
 ENV NODE_MAJOR=23
+ENV NODE_ENV=${APP_ENVIRONMENT:-development}
 
 RUN set -ex && apt-get update && apt-get install -y ca-certificates curl gnupg
 RUN set -ex && mkdir -p /etc/apt/keyrings

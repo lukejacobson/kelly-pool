@@ -45,7 +45,8 @@ export default {
     
     <div class="player_list">
       <div class="player_list_item" v-for="(player, index) in this.$store.state.players" :key="index">
-        <div class="player_name">{{ player.name }} <span v-if="playState">({{ $store.getters.getPlayerStatus(player) }})</span></div>
+        <div class="player_name">{{ player.name }} </div>
+        <div v-if="playState">({{ $store.getters.getPlayerStatus(player) }})</div>
         <button v-if="startState" class="remove_player" @click="() => removePlayer(player)"> x </button>
         <button v-if="playState" class="remove_player" @click="() => showBalls(player)">View Balls</button>
       </div>
@@ -58,6 +59,11 @@ export default {
 </template>
 
 <style scoped>
+button {
+  font-size: 16px;
+  margin: 10px 0;
+}
+
 .player_container {
   width: 360px;
 }

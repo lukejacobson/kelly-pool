@@ -22,49 +22,13 @@ jobs:
         with:
           # Checkout branch that triggered push, ie: refs/remotes/origin/staging
           ref: ${{ github.ref }}
-      - name: Set environment variables
+      - name: Build and push to github pages
         run: |
-          echo "APP_ENVIRONMENT=$(if [[ "${GITHUB_REF##*/}" == "production" ]]; then echo "production"; \
-                                elif [[ "${GITHUB_REF##*/}" == "staging" ]]; then echo "staging"; fi)" >> $GITHUB_ENV
-          echo "DATE_TIMESTAMP=$(echo $(date +"%Y-%m-%dT%H%M%SZ"))" >> $GITHUB_ENV
-      # Use preceding variables
-      - name: Set container tags
-        run: |
-          echo "IMAGE_TAG=${{ env.APP_ENVIRONMENT }}-${{ env.DATE_TIMESTAMP }}" >> $GITHUB_ENV
-      - name: Configure aws cli
-        run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set default.region ap-southeast-2
-      - name: Build and publish app image
-        run: |
-          # build Docker image with tag matching the current environment and date timestamp
-          docker build --ssh default -t kelly-pool:$IMAGE_TAG .
+          npm run build
+          git add .
+          git commit -m "deploy - add dist files"
+          git subtree push --prefix dist origin gh-pages
 
-          # create matching remote Docker image tags
-          docker tag kelly-pool:$IMAGE_TAG 600627356228.dkr.ecr.ap-southeast-2.amazonaws.com/jukelacobson/lukes-kelly-pool:$IMAGE_TAG
 
-          # authenticate to Amazon ECR registry with Docker
-          aws --region ap-southeast-2 ecr get-login-password | docker login --username AWS --password-stdin 600627356228.dkr.ecr.ap-southeast-2.amazonaws.com/jukelacobson/lukes-kelly-pool
 
-          # push docker images to remote repository
-          docker push 600627356228.dkr.ecr.ap-southeast-2.amazonaws.com/jukelacobson/lukes-kelly-pool:$IMAGE_TAG
-      - name: Generate deployment package
-        run: |
-          # substitute app image tag to deploy
-          envsubst '$APP_ENVIRONMENT,$DATE_TIMESTAMP' <Dockerrun.aws.json > Dockerrun.aws.json.tmp
-          mv Dockerrun.aws.json.tmp Dockerrun.aws.json
 
-          # unique name, overwritten with every deploy
-          zip -r lukes-kelly-pool-$IMAGE_TAG Dockerrun.aws.json .ebextensions/ .platform/
-      - name: Deploy to EB
-        uses: einaregilsson/beanstalk-deploy@v22
-        with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: "Luke's Kelly Pool"
-          environment_name: lukes-kelly-pool-${{ env.APP_ENVIRONMENT }}
-          version_label: ${{ env.APP_ENVIRONMENT }}-${{ env.DATE_TIMESTAMP }}
-          region: ap-southeast-2
-          deployment_package: lukes-kelly-pool-${{ env.APP_ENVIRONMENT }}-${{ env.DATE_TIMESTAMP }}.zip
-          wait_for_environment_recovery: 90
