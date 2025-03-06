@@ -91,7 +91,10 @@ export default {
 <style scoped>
 
 .reset {
-  margin: 20px;
+  margin: 30px 0;
+  > button {
+    font-size: 20px;
+  }
 }
 
 .hide_player_balls {
